@@ -203,4 +203,3 @@ MESSAGE
 
   ActiveSupport.run_load_hooks(:devise_controller, self)
 end
-Contact GitHub API Training Shop Blog About
