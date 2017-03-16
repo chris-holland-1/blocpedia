@@ -53,3 +53,6 @@ users = User.all
 puts "Seed finished"
 puts "#{User.count} users created"
 puts "#{Wiki.count} wiki created"
+puts "Admin user created"
+puts "Standard user created"
+ puts "Premium user created"
