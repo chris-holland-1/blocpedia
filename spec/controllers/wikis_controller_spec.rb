@@ -1,8 +1,10 @@
 require 'rails_helper'
+include SessionsHelper
 
 RSpec.describe WikisController, type: :controller do
 
-  let(:my_wiki) { Wiki.create!(title: RandomData.random_sentence, body: RandomData.random_paragraph) }
+  let(:my_user) { User.create!(name: "Blocpedia User", email: "user@blocpedia.com", password: "helloworld") }
+  let(:my_wiki) { Wiki.create!(title: RandomData.random_sentence, body: RandomData.random_paragraph, user: my_user) }
 
   describe "GET #index" do
     it "returns http success" do

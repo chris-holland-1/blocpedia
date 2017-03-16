@@ -23,7 +23,7 @@ class ApplicationPolicy
   end
 
   def update?
-    false
+    user.present?
   end
 
   def edit?
@@ -48,6 +48,19 @@ class ApplicationPolicy
 
     def resolve
       scope
+    end
+  end
+
+  class WikiPolicy
+  attr_reader :user, :wiki
+
+    def initialize(user, wiki)
+      @user = user
+      @wiki = wiki
+    end
+
+    def update?
+      user.admin? or not wiki.published?
     end
   end
 end
