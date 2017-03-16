@@ -12,6 +12,9 @@ class Devise::SessionsController < DeviseController
     respond_with(resource, serialize_options(resource))
   end
 
+  def show
+  end
+
   # POST /resource/sign_in
   def create
     self.resource = warden.authenticate!(auth_options)

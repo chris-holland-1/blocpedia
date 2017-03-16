@@ -6,7 +6,7 @@ class User < ActiveRecord::Base
 
   has_many :wikis
   has_one :address
-  after_initialize :init
+  # after_initialize :init
 
   #def init
     #self.number  ||= 0.0           #will set the default value only if it's nil
@@ -18,15 +18,13 @@ class User < ActiveRecord::Base
 
   validates :name, length: { minimum: 1, maximum: 100 }, presence: true
 
-  validates :password, presence: true, length: { minimum: 6 }, if: "password_digest.nil?"
+  validates :password, presence: true, length: { minimum: 6 }, if: "encrypted_password.nil?"
   validates :password, length: { minimum: 6 }, allow_blank: true
 
   validates :email,
              presence: true,
              uniqueness: { case_sensitive: false },
              length: { minimum: 3, maximum: 254 }
-
-  has_secure_password
 
   enum role: [:standard, :premium, :admin]
 end
