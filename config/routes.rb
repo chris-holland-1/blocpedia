@@ -1,18 +1,29 @@
 Rails.application.routes.draw do
 
-  resources :users, only: [:new, :create]
+  devise_for :user
 
-  resources :sessions
+  get 'charges/create'
 
-  resources :wikis
+  get "log_in" => 'sessions#new', :as => "log_in"
+  get "log_out" => 'sessions#destroy', :as => "log_out"
 
-  devise_for :users
 
-  devise_scope :user do
-    get "/some/route" => "some_devise_controller"
-  end
+  get "sign_up" => "users#new", :as => "sign_up"
+
+  get "my_account" => "users#show", :as => "my_account"
+
+  get 'users/confirm' => 'users#confirm'
 
   get 'about' => 'welcome#about'
 
-  root 'welcome#index'
+  get 'index' => 'welcome#index'
+
+  root :to => "sessions#new"
+
+  resources :users
+  resources :sessions
+  resources :wikis
+  resources :charges, only: [:new, :create]
+
+  match "users/:id/downgrade" => "users#downgrade", :as => "downgrade_user", via: [:get, :post]
 end

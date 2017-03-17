@@ -4,6 +4,8 @@ class WikisController < ApplicationController
 
   def index
     @wikis = Wiki.all
+    @wikis = policy_scope(Wiki).paginate(page: params[:page], per_page: 10)
+    authorize @wikis
   end
 
   def show
@@ -67,6 +69,23 @@ class WikisController < ApplicationController
     unless current_user == wiki.user || current_user.admin?
       flash[:alert] = "You must be an admin to do that."
       redirect_to wikis_path
+    end
+  end
+
+  class Scope
+    attr_reader :user, :scope
+
+    def initialize(user, scope)
+      @user = user
+      @scope = scope
+    end
+
+    def resolve
+      if @user.present?
+        wikis = Wiki.visible_to(@user)
+      else
+        wikis = Wiki.publicly_visible
+      end
     end
   end
 end
