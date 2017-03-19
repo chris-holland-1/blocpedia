@@ -5,10 +5,10 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable
 
   # Setup accessible (or protected) attributes for your model
-  attr_accessor :email, :password, :password_confirmation, :remember_me 
+  attr_accessor :email, :password, :password_confirmation, :remember_me
 
   has_many :wikis
-  has_one :address
+  # has_one :address
   # after_initialize :init
 
   #def init
@@ -17,7 +17,9 @@ class User < ActiveRecord::Base
   #end
 
   before_save { self.email = email.downcase if email.present? }
-  before_save { self.role ||= :standard }
+  # before_save { self.role ||= :standard }
+
+  after_initialize { self.role ||= :standard }
 
   validates :name, length: { minimum: 1, maximum: 100 }, presence: true
 

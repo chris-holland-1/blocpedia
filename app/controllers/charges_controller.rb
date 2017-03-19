@@ -3,28 +3,36 @@ class ChargesController < ApplicationController
 
   def new
     @stripe_btn_data = {
-        key: Rails.configuration.stripe[:publishable_key].to_s,
+        key: "#{ Rails.configuration.stripe[:publishable_key] }",
+        # Rails.configuration.stripe[:publishable_key].to_s
         description: "Blocpedia Membership - #{current_user.email}",
         amount: @amount
     }
   end
 
   def create
+    @user = current_user
+
     # Creates a Stripe Customer object, for associating
     # with the charge
-    customer = StripeTool.create_customer(email: params[:stripeEmail],
-                                          stripe_token: params[:stripeToken])
+    customer = Stripe::Customer.create(
+      email: current_user.email,
+      card: params[:stripeToken]
+    )
 
     # Where the real magic happens
-    charge = StripeTool.create_charge(customer_id: customer.id,
-                                      amount: @amount,
-                                      description: 'Rails Stripe customer')
+    charge = Stripe::Charge.create(
+    customer: customer.id,
+    amount: 15_00,
+    description: "Upgrade to Premium Membership - #{current_user.email}",
+    currency: 'usd'
+  )
 
     current_user.update_attribute(:role, 'premium')
 
     if current_user.save!
-      flash[:notice] = "Thanks for all the money, #{current_user.email}! Feel free to pay me again."
-      redirect_to user_path(current_user) # or wherever
+      flash[:notice] = "Thanks for all the money, #{current_user.email}! ou can now create and edit private wikis."
+      redirect_to root_path # or wherever
     end
 
     # Stripe will send back CardErrors, with friendly messages
@@ -39,5 +47,9 @@ class ChargesController < ApplicationController
 
   def amount_to_be_charged
     @amount = 1500
+  end
+
+  def upgrade_user_role
+    @user.role = 'premium'
   end
 end

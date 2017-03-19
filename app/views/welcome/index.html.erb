@@ -1,2 +1,33 @@
-<h1>Welcome#index</h1>
-<p>Find me in app/views/welcome/index.html.erb</p>
+<br>
+
+<div class="heading">
+  <h1> Blocipedia: Social, Markdown Enabled Wikis </h1>
+
+  <div class="box">
+    <h3> Create and Share Markdown Wikis </h3>
+    <p>
+      <%= link_to "Sign Up", new_user_path, class: 'btn btn-primary' %>
+    </p>
+  </div>
+</div>
+
+
+<div class="row">
+  <div class="col-md-6">
+    <h4 class="free-location"> Create Public Wikis </h4>
+    <div class="free-button">
+      <%= link_to "Free Plan", new_user_path, class: 'btn btn-info' %>
+    </div>
+  </div>
+
+  <div class="col-md-5">
+    <h4 class='premium-location'> Create Private Wikis </h4>
+    <div class='premium-button'>
+    <%= link_to "Premium Plan", new_charge_path, class: 'btn btn-info' %>
+    </div>
+  </div>
+</div>
+
+<% content_for :analytic do %>
+  <script type="text/javascript"> $(document).ready(function(){ blocmetrics.report("Home Page Visit"); }); </script>
+<% end %>

@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
 
-  devise_for :user
+  devise_for :users
 
   get 'charges/create'
 
@@ -8,9 +8,9 @@ Rails.application.routes.draw do
   get "log_out" => 'sessions#destroy', :as => "log_out"
 
 
-  get "sign_up" => "users#new", :as => "sign_up"
+  # get "sign_up" => "users#new", :as => "sign_up"
 
-  get "my_account" => "users#show", :as => "my_account"
+  # get "my_account" => "users#show", :as => "my_account"
 
   get 'users/confirm' => 'users#confirm'
 
@@ -18,12 +18,12 @@ Rails.application.routes.draw do
 
   get 'index' => 'welcome#index'
 
-  root :to => "sessions#new"
-
-  resources :users
+  resources :users #is this duplicated with devise_for?
   resources :sessions
   resources :wikis
   resources :charges, only: [:new, :create]
 
   match "users/:id/downgrade" => "users#downgrade", :as => "downgrade_user", via: [:get, :post]
+
+  root :to => "sessions#new"
 end

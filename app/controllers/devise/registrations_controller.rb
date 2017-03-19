@@ -7,7 +7,7 @@ class Devise::RegistrationsController < DeviseController
   def new
     build_resource({})
     yield resource if block_given?
-    respond_with resource
+    # respond_with resource
   end
 
   # POST /resource
