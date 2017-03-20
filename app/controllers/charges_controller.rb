@@ -23,7 +23,7 @@ class ChargesController < ApplicationController
     # Where the real magic happens
     charge = Stripe::Charge.create(
     customer: customer.id,
-    amount: 15_00,
+    amount: @amount,
     description: "Upgrade to Premium Membership - #{current_user.email}",
     currency: 'usd'
   )

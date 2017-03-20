@@ -25,5 +25,5 @@ Rails.application.routes.draw do
 
   match "users/:id/downgrade" => "users#downgrade", :as => "downgrade_user", via: [:get, :post]
 
-  root :to => "sessions#new"
+  root :to => 'welcome#index'
 end
