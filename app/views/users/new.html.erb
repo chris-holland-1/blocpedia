@@ -14,8 +14,8 @@
         </div>
       <% end %>
       <%= form_group_tag(@user.errors[:name]) do %>
-        <%= f.label :name %>
-        <%= f.text_field :name, autofocus: true, class: 'form-control', placeholder: "Enter name" %>
+        <%= f.label :name, "Your Name" %>
+        <%= f.name_field :name, autofocus: true, class: 'form-control', placeholder: "Enter name" %>
       <% end %>
       <%= form_group_tag(@user.errors[:email]) do %>
         <%= f.label :email %>

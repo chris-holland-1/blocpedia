@@ -5,23 +5,21 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable
 
   # Setup accessible (or protected) attributes for your model
-  attr_accessor :email, :password, :password_confirmation, :remember_me
+  attr_accessor :name, :password, :password_confirmation, :remember_me
+  #:email
+
+  #has_one :name
+  #has_one :email
+  #has_one :password
 
   has_many :wikis
-  # has_one :address
-  # after_initialize :init
-
-  #def init
-    #self.number  ||= 0.0           #will set the default value only if it's nil
-    #self.address ||= build_address #let's you set a default association
-  #end
 
   before_save { self.email = email.downcase if email.present? }
   # before_save { self.role ||= :standard }
 
   after_initialize { self.role ||= :standard }
 
-  validates :name, length: { minimum: 1, maximum: 100 }, presence: true
+  # validates :name, length: { minimum: 1, maximum: 100 }, presence: true
 
   validates :password, presence: true, length: { minimum: 6 }, if: "encrypted_password.nil?"
   validates :password, length: { minimum: 6 }, allow_blank: true

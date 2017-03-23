@@ -11,6 +11,10 @@ class ApplicationController < ActionController::Base
 
   rescue_from Pundit::NotAuthorizedError, with: :require_sign_in
 
+  def after_sign_in_path_for(resource)
+    wikis_path
+  end
+
   private
 
    def require_sign_in
