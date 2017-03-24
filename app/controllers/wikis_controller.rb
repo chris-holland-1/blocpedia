@@ -1,65 +1,61 @@
 class WikisController < ApplicationController
-  include ApplicationHelper
-
-  before_filter :authenticate_user!
-
-  after_action :verify_authorized, :except => :index
-
-  #before_action :require_sign_in, except: :show
-  #before_action :authorize_user, except: :show
-
   def index
-    #@wikis = Wiki.all
-    @wikis = policy_scope(Wiki)#.paginate(page: params[:page], per_page: 10)
-    #authorize @wikis
+    @wikis = policy_scope(Wiki)
   end
 
   def show
     @wiki = Wiki.find(params[:id])
-    authorize @wiki
+    if current_user.present?
+      collaborators = []
+      @wiki.collaborators.each do |collaborator|
+        collaborators << collaborator.email
+      end
+      unless (@wiki.private == false) || @wiki.user == current_user || collaborators.include?(current_user.email) || current_user.admin?
+        flash[:alert] = "You are not authorized to view this wiki."
+        redirect_to new_charge_path
+      end
+    else
+      flash[:alert] = "You are not authorized to view this wiki."
+      redirect_to new_user_registration_path
+    end
   end
 
   def new
-    @user = current_user
     @wiki = Wiki.new
     authorize @wiki
   end
 
   def create
-    @user = current_user
     @wiki = Wiki.new(wiki_params)
-    #@wiki.title = params[:post][:title]
-    #@wiki.body = params[:post][:body]
-
     @wiki.user = current_user
     authorize @wiki
 
     if @wiki.save
-      flash[:notice] = "Wiki was saved."
+      @wiki.collaborators = Collaborator.update_collaborators(params[:wiki][:collaborators])
+      flash[:notice] = "Your wiki was saved successfully."
       redirect_to @wiki
     else
-      flash.now[:alert] = "There was an error saving the wiki. Please try again."
+      flash.now[:alert] = "There was an error saving your wiki. Please try again later."
       render :new
     end
   end
 
   def edit
     @wiki = Wiki.find(params[:id])
-    @users = User.all
     authorize @wiki
   end
 
   def update
     @wiki = Wiki.find(params[:id])
-    #@wiki.title = params[:post][:title]
-    #@wiki.body = params[:post][:body]
+    @wiki.assign_attributes(wiki_params)
     authorize @wiki
 
-    @wiki.assign_attributes(wiki_params)
-    @wiki.user_ids = params[:wiki][:user_ids] if params[:wiki][:user_ids].present?
-
-    if @wiki.save
-      flash[:notice] = "Wiki was updated."
+    if @wiki.save && (@wiki.user == current_user || current_user.admin?)
+      @wiki.collaborators = Collaborator.update_collaborators(params[:wiki][:collaborators])
+      flash[:notice] = "Wiki was updated successfully."
+      redirect_to @wiki
+    elsif @wiki.save
+      flash[:notice] = "Wiki was updated successfully."
       redirect_to @wiki
     else
       flash.now[:alert] = "There was an error saving the wiki. Please try again."
@@ -83,14 +79,7 @@ class WikisController < ApplicationController
   private
 
   def wiki_params
-    params.require(:wiki).permit(:title, :body, :private, :user, :user_ids)
+    params.require(:wiki).permit(:title, :body, :private)
   end
 
-  def authorize_user
-    wiki = Wiki.find(params[:id])
-    unless current_user == wiki.user || current_user.admin?
-      flash[:alert] = "You must be an admin to do that."
-      redirect_to wikis_path
-    end
-  end
 end

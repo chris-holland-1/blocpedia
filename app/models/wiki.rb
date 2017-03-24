@@ -1,10 +1,12 @@
 class Wiki < ActiveRecord::Base
   belongs_to :user
+  has_many :collaborators
 
-  validates :title, length: { minimum: 5 }, presence: true
-  validates :body, length: { minimum: 20 }, presence: true
-  validates :user, presence: true
+  after_initialize :initialize_role
 
-  scope :visible_to, -> (user) { user && (user.premium? || user.admin?) ? all : where(public: true)  }
-  scope :publicly_visible, -> {where(public: true)}
+  private
+
+  def initialize_role
+    self.private = false if self.private.nil?
+  end
 end
