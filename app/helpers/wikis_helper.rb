@@ -11,8 +11,7 @@ module WikisHelper
       current_user && (current_user == @wiki.user || current_user.admin?)
   end
 
-  def markdown(text)
-      extensions = [:tables, :fenced_code_blocks, :autolink, :strikethrough, :underline, :highlight, :quote, :footnotes]
-      Markdown.new(text, *extensions).to_html.html_safe
+  def markdown
+      Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: true, tables: true)
   end
 end
