@@ -36,42 +36,25 @@ class WikiPolicy < ApplicationPolicy
 
     def resolve
       wikis = []
-      if user.nil?
+      if user.role == 'admin'
+        wikis = scope.all # if the user is an admin, show them all the wikis
+      elsif user.role == 'premium'
         all_wikis = scope.all
-        wikis = []
         all_wikis.each do |wiki|
-          if wiki.private == false
-            wikis << wiki
+          if wiki.owner == user || wiki.collaborators.include?(user) || wiki != wiki.private?
+            wikis << wiki # if the user is premium, only show them public wikis, or that private wikis they created, or private wikis they are a collaborator on
           end
         end
-      elsif user.admin?
-        wikis = scope.all
-      elsif user.premium?
+      else # this is the lowly standard user
         all_wikis = scope.all
         wikis = []
-        collaborators = []
         all_wikis.each do |wiki|
-          wiki.collaborators.each do |collaborator|
-            collaborators << collaborator.email
-          end
-          if wiki.private == false || wiki.user == user || collaborators.include?(user.email)
-            wikis << wiki
-          end
-        end
-      else
-        all_wikis = scope.all
-        wikis = []
-        collaborators = []
-        all_wikis.each do |wiki|
-          wiki.collaborators.each do |collaborator|
-            collaborators << collaborator.email
-          end
-          if wiki.private == false || collaborators.include?(user.email)
-            wikis << wiki
+          if wiki.collaborators.include?(user) || wiki != wiki.private?
+            wikis << wiki # only show standard users public wikis and private wikis they are a collaborator on
           end
         end
       end
-      wikis
+      wikis # return the wikis array we've built up
     end
   end
 end
